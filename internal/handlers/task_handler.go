@@ -81,7 +81,7 @@ func (h *TaskHandler) GetAllTasks(w http.ResponseWriter, r *http.Request){
 }
 
 // UpdateTask manages PUT /tasks/{id}
-func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request){
+func (h *TaskHandler) UpdateTask(w http.ResponseWriter, r *http.Request){
 	id, err := extractID(r.URL.Path)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, "Invalid task ID")
