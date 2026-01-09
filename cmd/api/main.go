@@ -4,13 +4,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"taskapi/internal/config"
 	"taskapi/internal/handlers"
 	"taskapi/internal/storage"
 )
 
 func main() {
-	// Initialize storage
-	store := storage.NewMemoryStore()
+	// Load configuration
+	cfg := config.Load()
+
+	// Connect to PostgreSQL
+	store, err := storage.NewPostgresStore(cfg.GetDatabaseURL())
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer store.Close()
+
+	log.Println("✅ Connected to PostgreSQL database")
+    /************************************/
 
 	// Create handler
 	taskHandler := handlers.NewTaskHandler(store)
