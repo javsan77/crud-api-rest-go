@@ -1,184 +1,164 @@
-# CRUD - REST API in Go
+# Task API – Pure Go REST API
 
-A complete REST API for task management, built from scratch with pure Go (no external frameworks). An educational project ideal for learning backend development fundamentals with Golang.
+A simple and clean **RESTful API for task management**, built **from scratch using pure Go** (standard library only for HTTP).  
+This project is intended as an **educational backend example**, showing how to structure a Go application without heavy frameworks.
 
 ## 🚀 Features
 
 - ✅ Full CRUD operations (Create, Read, Update, Delete)
-- ✅ RESTful API with well-defined endpoints
-- ✅ Clean and modular architecture
-- ✅ Thread-safe in-memory storage
-- ✅ Custom middlewares (CORS, logging)
-- ✅ Robust error handling
-- ✅ No external dependencies (only Go stdlib)
+- ✅ RESTful API design
+- ✅ Pure Go (`net/http`) – no web frameworks
+- ✅ PostgreSQL integration using `pgx`
+- ✅ Clean architecture (handlers, models, storage, config)
+- ✅ Partial updates using `COALESCE`
+- ✅ Middleware support (Logging, CORS)
+- ✅ Environment-based configuration (`.env`)
+- ✅ Interface-based storage (PostgreSQL or in-memory)
 
-## 📋 Prerequisites
+---
 
-- Go 1.21 or higher installed
-- curl or Postman to test the API
-- Operating System: Linux, macOS, or Windows
+## 🧱 Tech Stack
 
-## 🛠️ Installation and Setup
+- **Go** 1.21+
+- **PostgreSQL**
+- **pgx** (PostgreSQL driver)
+- **godotenv** (environment variables)
+
+---
+
+## 📂 Project Structure
+
+```
+
+taskapi/
+├── cmd/
+│   └── api/
+│       └── main.go              # Application entry point
+├── internal/
+│   ├── config/
+│   │   └── config.go            # Environment configuration
+│   ├── handlers/
+│   │   └── task_handler.go      # HTTP handlers
+│   ├── models/
+│   │   └── task.go              # Domain models and DTOs
+│   └── storage/
+│       ├── memory_store.go      # In-memory storage (optional)
+│       └── postgres_store.go    # PostgreSQL implementation
+├── .env                         # Environment variables
+├── go.mod
+├── go.sum
+├── LICENSE
+└── README.md
+
+````
+
+---
+
+## ⚙️ Configuration
+
+Create a `.env` file in the project root:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=taskuser
+DB_PASSWORD=taskpass123
+DB_NAME=taskdb
+SERVER_PORT=8080
+````
+
+---
+
+## 🗄️ Database Setup
+
+Example table definition:
+
+```sql
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+```
+
+---
+
+## ▶️ Running the Application
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/javsan77/crud-api-rest-go
-cd crud-api-rest-go
+git clone https://github.com/javsan77/taskapi.git
+cd taskapi
 ```
 
-### 2. Verify Go installation
-
-```bash
-go version
-```
-
-### 3. Initialize Go modules
+### 2. Install dependencies
 
 ```bash
 go mod tidy
 ```
 
-### 4. Run the server
+### 3. Run the server
 
 ```bash
 go run cmd/api/main.go
 ```
 
-The server will start on `http://localhost:8080`
-
-You should see:
-```
-🚀 Server started on http://localhost:8080
-Available endpoints:
-  GET    /tasks       - Get all tasks
-  POST   /tasks       - Create a task
-  GET    /tasks/{id}  - Get a task
-  PUT    /tasks/{id}  - Update a task
-  DELETE /tasks/{id}  - Delete a task
-```
-
-## 📂 Project Structure
+Server will start at:
 
 ```
-crud-api-rest-go/
-├── cmd/
-│   └── api/
-│       └── main.go              # Entry point and HTTP server
-├── internal/
-│   ├── handlers/
-│   │   └── task_handler.go      # HTTP handlers
-│   ├── models/
-│   │   └── task.go              # Data models and DTOs
-│   └── storage/
-│       └── memory_store.go      # Persistence layer
-├── .gitignore
-├── go.mod
-├── LICENSE
-└── README.md
+http://localhost:8080
 ```
 
-### Component Description
-
-- **cmd/api**: Server configuration and routing
-- **internal/handlers**: HTTP request handling logic
-- **internal/models**: Data structures and validations
-- **internal/storage**: Storage implementation (currently in-memory)
+---
 
 ## 🔌 API Endpoints
 
-### 📋 Data Model: Task
+| Method | Endpoint      | Description       |
+| ------ | ------------- | ----------------- |
+| POST   | `/tasks`      | Create a new task |
+| GET    | `/tasks`      | Get all tasks     |
+| GET    | `/tasks/{id}` | Get task by ID    |
+| PUT    | `/tasks/{id}` | Update a task     |
+| DELETE | `/tasks/{id}` | Delete a task     |
+
+---
+
+## 🧾 Task Model
 
 ```json
 {
   "id": 1,
-  "title": "Task title",
-  "description": "Detailed description",
+  "title": "Learn Go",
+  "description": "Build a REST API",
   "completed": false,
-  "created_at": "2026-01-08T10:00:00Z",
-  "updated_at": "2026-01-08T10:00:00Z"
+  "created_at": "2026-01-09T12:00:00Z",
+  "updated_at": "2026-01-09T12:00:00Z"
 }
 ```
 
-### Available Endpoints
+---
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/tasks` | Create a new task |
-| GET | `/tasks` | Get all tasks |
-| GET | `/tasks/{id}` | Get task by ID |
-| PUT | `/tasks/{id}` | Update a task |
-| DELETE | `/tasks/{id}` | Delete a task |
+## 📌 Example Requests
 
-## 📝 Usage Examples
+### Create a Task
 
-### 1. Create a new task
-
-**Request:**
 ```bash
 curl -X POST http://localhost:8080/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Learn Go",
-    "description": "Complete REST API tutorial"
+    "description": "Build REST API with pure Go"
   }'
 ```
 
-**Response:** `201 Created`
-```json
-{
-  "id": 1,
-  "title": "Learn Go",
-  "description": "Complete REST API tutorial",
-  "completed": false,
-  "created_at": "2026-01-08T10:00:00Z",
-  "updated_at": "2026-01-08T10:00:00Z"
-}
-```
+---
 
-### 2. Get all tasks
+### Update a Task (Partial Update)
 
-**Request:**
-```bash
-curl http://localhost:8080/tasks
-```
-
-**Response:** `200 OK`
-```json
-[
-  {
-    "id": 1,
-    "title": "Learn Go",
-    "description": "Complete REST API tutorial",
-    "completed": false,
-    "created_at": "2026-01-08T10:00:00Z",
-    "updated_at": "2026-01-08T10:00:00Z"
-  }
-]
-```
-
-### 3. Get a specific task
-
-**Request:**
-```bash
-curl http://localhost:8080/tasks/1
-```
-
-**Response:** `200 OK`
-```json
-{
-  "id": 1,
-  "title": "Learn Go",
-  "description": "Complete REST API tutorial",
-  "completed": false,
-  "created_at": "2026-01-08T10:00:00Z",
-  "updated_at": "2026-01-08T10:00:00Z"
-}
-```
-
-### 4. Update a task
-
-**Request:**
 ```bash
 curl -X PUT http://localhost:8080/tasks/1 \
   -H "Content-Type: application/json" \
@@ -187,142 +167,96 @@ curl -X PUT http://localhost:8080/tasks/1 \
   }'
 ```
 
-**Response:** `200 OK`
-```json
-{
-  "id": 1,
-  "title": "Learn Go",
-  "description": "Complete REST API tutorial",
-  "completed": true,
-  "created_at": "2026-01-08T10:00:00Z",
-  "updated_at": "2026-01-08T10:30:00Z"
-}
-```
+---
 
-### 5. Delete a task
+### Delete a Task
 
-**Request:**
 ```bash
 curl -X DELETE http://localhost:8080/tasks/1
 ```
 
-**Response:** `204 No Content`
+---
 
-### Error Handling
+## 🧠 Design Highlights
 
-**Task not found:**
-```json
-{
-  "error": "Task not found"
-}
-```
+### ✔ Interface-Based Storage
 
-**Validation failed:**
-```json
-{
-  "error": "title is required"
-}
-```
-
-## 🏗️ Go Concepts Implemented
-
-This project is excellent for learning Go because it implements:
-
-### 1. **Modular Architecture**
-Clear separation of concerns in layers (handlers, models, storage)
-
-### 2. **Interfaces**
 ```go
 type TaskStore interface {
     Create(task *Task) error
     GetByID(id int) (*Task, error)
-    // ...
+    GetAll() ([]*Task, error)
+    Update(id int, updates *UpdateTaskRequest) (*Task, error)
+    Delete(id int) error
 }
 ```
 
-### 3. **Pointers and Optional Values**
-```go
-type UpdateTaskRequest struct {
-    Title *string `json:"title,omitempty"`  // Optional field
-}
+Allows easy switching between **PostgreSQL** and **in-memory** storage.
+
+---
+
+### ✔ Partial Updates with COALESCE
+
+```sql
+UPDATE tasks
+SET title = COALESCE($1, title),
+    description = COALESCE($2, description),
+    completed = COALESCE($3, completed),
+    updated_at = $4
+WHERE id = $5;
 ```
 
-### 4. **Safe Concurrency**
-```go
-type MemoryStore struct {
-    mu sync.RWMutex  // Protects concurrent access
-    tasks map[int]*Task
-}
-```
+Only updates fields that are provided.
 
-### 5. **Middleware Pattern**
+---
+
+### ✔ Middleware Pattern
+
 ```go
 handler := loggingMiddleware(corsMiddleware(mux))
 ```
 
-### 6. **Explicit Error Handling**
-No exceptions, all errors are handled explicitly
+---
 
-### 7. **Struct Tags**
-```go
-type Task struct {
-    ID int `json:"id"`  // JSON serialization
-}
-```
+## 🛠 Build Binary
 
-## 🧪 Building the Application
-
-### Build for your OS
 ```bash
 go build -o task-api cmd/api/main.go
 ./task-api
 ```
 
-### Cross-platform compilation
+### Cross Compilation
+
 ```bash
-# Linux
 GOOS=linux GOARCH=amd64 go build -o task-api-linux cmd/api/main.go
-
-# Windows
 GOOS=windows GOARCH=amd64 go build -o task-api.exe cmd/api/main.go
-
-# macOS
 GOOS=darwin GOARCH=amd64 go build -o task-api-macos cmd/api/main.go
 ```
 
-## 🔄 Roadmap and Future Improvements
+---
 
-- [ ] **Persistence**: PostgreSQL/MySQL integration
-- [ ] **Authentication**: User system and JWT
-- [ ] **Tests**: Unit and integration tests
-- [ ] **Advanced Validation**: Use libraries like `validator`
-- [ ] **Pagination**: Support for large datasets
-- [ ] **Filters and Search**: Advanced query parameters
-- [ ] **Swagger/OpenAPI**: Automatic API documentation
-- [ ] **Docker**: Application containerization
-- [ ] **CI/CD**: Continuous integration pipelines
-- [ ] **Structured Logging**: Implement `zap` or `logrus`
-- [ ] **Configuration**: Environment variables with `viper`
-- [ ] **Rate Limiting**: Request rate control
-- [ ] **Caching**: Redis for performance improvement
+## 🗺️ Roadmap
 
-## 📚 Learning Resources
+* [ ] Unit and integration tests
+* [ ] Pagination and filtering
+* [ ] Authentication (JWT)
+* [ ] Swagger / OpenAPI
+* [ ] Docker support
+* [ ] Structured logging
+* [ ] CI/CD pipeline
 
-- [Official Go Documentation](https://go.dev/doc/)
-- [Effective Go](https://go.dev/doc/effective_go)
-- [Go by Example](https://gobyexample.com/)
-- [A Tour of Go](https://go.dev/tour/)
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT License
+See the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+---
 
-**Your Name**
-- GitHub: [@javsan77](https://github.com/javsan77)
-- LinkedIn: [my-profile](https://www.linkedin.com/in/javier-sanchez-ayte/)
+## 👤 Author
 
+**Javier Sanchez Ayte**
 
-
-
+* GitHub: [https://github.com/javsan77](https://github.com/javsan77)
+* LinkedIn: [https://www.linkedin.com/in/javier-sanchez-ayte/](https://www.linkedin.com/in/javier-sanchez-ayte/)
