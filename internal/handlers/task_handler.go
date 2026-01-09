@@ -7,7 +7,6 @@ import (
 	"strings"
 	"taskapi/internal/models"
 	"taskapi/internal/storage"
-	"taskapi/internals/models"
 )
 
 // TashHandler maneja las peticiones HTTP para tasks

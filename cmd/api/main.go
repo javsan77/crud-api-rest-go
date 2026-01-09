@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ func main() {
 
 	// Create handler
 	taskHandler := handlers.NewTaskHandler(store)
-	
+
 	// Configure router
 	mux := http.NewServeMux()
 
@@ -30,16 +30,16 @@ func main() {
 		}
 	})
 
-	mux.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request){
+	mux.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			taskHandler.GetTask(w, r)
 		case http.MethodPut:
 			taskHandler.UpdateTask(w, r)
 		case http.MethodDelete:
-			taskHandler.DeleteTask(w, r)			
+			taskHandler.DeleteTask(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)			
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
@@ -76,12 +76,12 @@ func corsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		
+
 		next.ServeHTTP(w, r)
 	})
 

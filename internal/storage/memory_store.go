@@ -7,7 +7,7 @@ import (
 )
 
 // TaskStore defines the interface to storage operations
-type TaskStore interface{
+type TaskStore interface {
 	Create(task *models.Task) error
 	GetByID(id int) (*models.Task, error)
 	GetAll() ([]*models.Task, error)
@@ -17,21 +17,21 @@ type TaskStore interface{
 
 // MemoryStore implements TaskStore using memory
 type MemoryStore struct {
-	mu sync.RWMutex
-	tasks map[int]*models.Task
+	mu     sync.RWMutex
+	tasks  map[int]*models.Task
 	nextID int
 }
 
 // NewMemoryStore creates a new instance of MemoryStore
 func NewMemoryStore() *MemoryStore {
 	return &MemoryStore{
-		tasks: make(map[int]*models.Task),
-		nextID:1,
+		tasks:  make(map[int]*models.Task),
+		nextID: 1,
 	}
 }
 
 // Creates a new task
-func (s *MemoryStore) Create(task*models.Task) error {
+func (s *MemoryStore) Create(task *models.Task) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -46,13 +46,13 @@ func (s *MemoryStore) Create(task*models.Task) error {
 }
 
 // GetByID get a task by ID
-func (s *MemoryStore) GetByID(id int) (*models.Task, error){
+func (s *MemoryStore) GetByID(id int) (*models.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	task, exists := s.tasks[id]
 	if !exists {
-		return  nil, models.ErrTaskNotFound
+		return nil, models.ErrTaskNotFound
 	}
 
 	return task, nil
@@ -64,7 +64,7 @@ func (s *MemoryStore) GetAll() ([]*models.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	tasks :=make[]*models.Task, 0, len(s.tasks))
+	tasks := make([]*models.Task, 0, len(s.tasks))
 	for _, task := range s.tasks {
 		tasks = append(tasks, task)
 	}
@@ -73,12 +73,12 @@ func (s *MemoryStore) GetAll() ([]*models.Task, error) {
 }
 
 // Update a pending task
-func (s *MemoryStore) Update (id int, updates *models.UpdateTaskRequest) (*models.Task, error){
+func (s *MemoryStore) Update(id int, updates *models.UpdateTaskRequest) (*models.Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	task, exists := s.tasks[id]
-	if !exits {
+	if !exists {
 		return nil, models.ErrTaskNotFound
 	}
 
@@ -93,7 +93,7 @@ func (s *MemoryStore) Update (id int, updates *models.UpdateTaskRequest) (*model
 		task.Completed = *updates.Completed
 	}
 
-	task.Completed = time.Now()
+	task.UpdatedAt = time.Now()
 
 	return task, nil
 }
