@@ -7,9 +7,16 @@ import (
 	"taskapi/internal/config"
 	"taskapi/internal/handlers"
 	"taskapi/internal/storage"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load environment variables from .env
+	if err := godotenv.Load(); err != nil {
+		log.Println("⚠️  No .env file found, using default values")
+	}
+
 	// Load configuration
 	cfg := config.Load()
 
